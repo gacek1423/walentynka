@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Czy zostaniesz moją Walentynką? ❤️</title>
+    <title>Specjalna wiadomość ❤️</title>
     <style>
         body {
             margin: 0;
@@ -25,6 +25,7 @@
             width: 320px;
             z-index: 10;
             border: 2px solid #ffb3d1;
+            position: relative;
         }
 
         h1 { color: #d63384; font-size: 24px; margin-bottom: 30px; }
@@ -44,7 +45,6 @@
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            transition: transform 0.1s;
         }
 
         #yesBtn { background-color: #28a745; color: white; }
@@ -53,6 +53,29 @@
             color: white;
             position: relative;
             z-index: 999;
+            transition: all 0.1s ease;
+        }
+
+        /* Styl dymka z komunikatem */
+        #warning-toast {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff4d6d;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 2000;
+            animation: pop 0.3s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: translateX(-50%) scale(0); }
+            100% { transform: translateX(-50%) scale(1); }
         }
 
         #success-ui { display: none; }
@@ -60,29 +83,24 @@
         
         #youtube-player { position: absolute; top: -1000px; }
 
-        /* Styl konfetti */
         .confetti {
             position: absolute;
             width: 10px;
             height: 10px;
-            background-color: #f2d74e;
-            position: absolute;
             top: -10px;
             z-index: 1;
-            border-radius: 50%;
             animation: fall 3s linear forwards;
         }
 
         @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-            }
+            to { transform: translateY(100vh) rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
     <div id="youtube-player"></div>
+    <div id="warning-toast">No nie wygłupiaj się! 😂</div>
 
     <div id="container">
         <div id="question-ui">
@@ -94,13 +112,12 @@
         </div>
 
         <div id="success-ui">
-            <h1>Wiedziałem! ❤️</h1>
+            <h1>Wiedziałem! Kocham Cię! ❤️</h1>
             <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpwaGZicWdtYnZ4Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5JmNoY2s9MSZwdD0x/K1tgb1IUeBOgw/giphy.gif" alt="Szczęśliwy kot">
         </div>
     </div>
 
     <script>
-        // YouTube API
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -110,14 +127,24 @@
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
                 height: '0', width: '0',
-                videoId: 'BNL6ImhgCnk&list=RDBNL6ImhgCnk&start_radio',
+                videoId: 'Q3Kvu6Kgp88',
             });
         }
 
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
+        const toast = document.getElementById('warning-toast');
+        
+        let moveCount = 0; // Licznik ucieczek
 
         function moveButton() {
+            moveCount++;
+            
+            // Po 5 próbach pokonuje komunikat
+            if (moveCount === 5) {
+                showToast();
+            }
+
             noBtn.style.position = 'fixed';
             const padding = 60;
             const maxX = window.innerWidth - noBtn.offsetWidth - padding;
@@ -128,26 +155,28 @@
             noBtn.style.top = randomY + 'px';
         }
 
+        function showToast() {
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500); // Komunikat znika po 2.5 sekundy
+        }
+
         noBtn.addEventListener('mouseover', moveButton);
         noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveButton(); });
 
-        // Funkcja tworząca konfetti
         function createConfetti() {
             const colors = ['#ff4d6d', '#ff85a1', '#ffb3d1', '#ff0000', '#ffffff'];
             for (let i = 0; i < 100; i++) {
-                const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                confetti.style.opacity = Math.random();
-                // Dodajemy losowy kształt (kółko lub kwadrat)
-                if (Math.random() > 0.5) confetti.style.borderRadius = '0';
-                
-                document.body.appendChild(confetti);
-                
-                // Usuń po animacji
-                setTimeout(() => confetti.remove(), 4000);
+                const c = document.createElement('div');
+                c.classList.add('confetti');
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                c.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                c.style.opacity = Math.random();
+                if (Math.random() > 0.5) c.style.borderRadius = '50%';
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 4000);
             }
         }
 
@@ -155,9 +184,10 @@
             document.getElementById('question-ui').style.display = 'none';
             document.getElementById('success-ui').style.display = 'block';
             noBtn.style.display = 'none';
+            toast.style.display = 'none';
             
             if(player) player.playVideo();
-            createConfetti(); // Wywołanie konfetti
+            createConfetti();
         });
     </script>
 </body>

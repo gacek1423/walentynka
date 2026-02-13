@@ -5,18 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Czy zostaniesz moją Walentynką? ❤️</title>
     <style>
-        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #ffe6f2; font-family: Arial, sans-serif; overflow: hidden; touch-action: manipulation; }
-        #container { background: white; padding: 40px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 280px; z-index: 10; border: 2px solid #ffb3d1; }
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffe6f2;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        #container {
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 280px;
+            z-index: 10;
+            border: 2px solid #ffb3d1;
+            position: relative;
+        }
+
         h1 { color: #d63384; font-size: 22px; margin-bottom: 25px; }
-        .btn-group { display: flex; justify-content: center; align-items: center; gap: 20px; height: 50px; }
-        button { padding: 12px 25px; font-size: 18px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            height: 50px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
         #yesBtn { background-color: #28a745; color: white; }
-        #noBtn { background-color: #dc3545; color: white; position: relative; transition: all 0.1s ease; }
+        #noBtn {
+            background-color: #dc3545;
+            color: white;
+            position: relative;
+            z-index: 999;
+        }
+
         #success-ui { display: none; }
         img { width: 100%; border-radius: 15px; margin-top: 20px; }
-        #warning-toast { position: fixed; top: 15%; background: #ff4d6d; color: white; padding: 10px 20px; border-radius: 20px; display: none; z-index: 2000; font-weight: bold; }
-        .confetti { position: absolute; width: 8px; height: 8px; top: -10px; animation: fall 3s linear forwards; }
-        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
+
+        #warning-toast {
+            position: fixed;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff4d6d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: none;
+            z-index: 2000;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            top: -10px;
+            z-index: 1;
+            animation: fall 3s linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            font-size: 10px;
+            color: #ff85a1;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -35,51 +113,71 @@
                 <button id="noBtn">Nie</button>
             </div>
         </div>
+
         <div id="success-ui">
-            <h1>Wiedziałem!❤️</h1>
-            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpwaGZicWdtYnZ4Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5JmNoY2s9MSZwdD0x/K1tgb1IUeBOgw/giphy.gif">
+            <h1>Wiedziałem! Kocham Cię! ❤️</h1>
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpwaGZicWdtYnZ4Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5JmNoY2s9MSZwdD0x/K1tgb1IUeBOgw/giphy.gif" alt="Happy Cat">
         </div>
     </div>
+
+    <div class="footer">Made with ❤️</div>
 
     <script>
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const song = document.getElementById('loveSong');
+        const toast = document.getElementById('warning-toast');
         let moveCount = 0;
 
-        function move() {
+        // FUNKCJA UCIEKANIA
+        function moveButton() {
             moveCount++;
             if (moveCount === 5) {
-                document.getElementById('warning-toast').style.display = 'block';
-                setTimeout(() => document.getElementById('warning-toast').style.display = 'none', 2000);
+                toast.style.display = 'block';
+                setTimeout(() => toast.style.display = 'none', 2000);
             }
+
             noBtn.style.position = 'fixed';
-            const x = Math.max(20, Math.random() * (window.innerWidth - noBtn.offsetWidth - 20));
-            const y = Math.max(20, Math.random() * (window.innerHeight - noBtn.offsetHeight - 20));
-            noBtn.style.left = x + 'px';
-            noBtn.style.top = y + 'px';
+            const padding = 60;
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            
+            noBtn.style.left = Math.max(padding, Math.random() * maxX) + 'px';
+            noBtn.style.top = Math.max(padding, Math.random() * maxY) + 'px';
         }
 
-        noBtn.addEventListener('mouseover', move);
-        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); move(); });
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveButton(); });
 
+        // KLIKNIĘCIE TAK
         yesBtn.addEventListener('click', () => {
+            // 1. Zmiana widoku
             document.getElementById('question-ui').style.display = 'none';
             document.getElementById('success-ui').style.display = 'block';
             noBtn.style.display = 'none';
-            song.play().catch(err => console.log("Cisza na pokładzie: ", err));
+
+            // 2. Muzyka i konfetti
+            song.play().catch(e => console.log("Audio block"));
             createConfetti();
+
+            // 3. LOGI - POWIADOMIENIE FORMSPREE
+            fetch('https://formspree.io/f/mpqjpgew', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ powiadomienie: 'Kliknęła TAK! ❤️🌹' })
+            }).catch(error => console.log('Log error:', error));
         });
 
         function createConfetti() {
             const colors = ['#ff4d6d', '#ff85a1', '#ffffff'];
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 80; i++) {
                 const c = document.createElement('div');
                 c.classList.add('confetti');
                 c.style.left = Math.random() * 100 + 'vw';
                 c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 c.style.animationDuration = (Math.random() * 2 + 1) + 's';
                 document.body.appendChild(c);
+                setTimeout(() => c.remove(), 3000);
             }
         }
     </script>

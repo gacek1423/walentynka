@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Czy zostaniesz moją Walentynką? ❤️</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -48,22 +47,37 @@
             transition: transform 0.1s;
         }
 
-        #yesBtn { background-color: #28a745; color: white; box-shadow: 0 4px 0 #1e7e34; }
-        #yesBtn:active { transform: translateY(4px); box-shadow: none; }
-
+        #yesBtn { background-color: #28a745; color: white; }
         #noBtn {
             background-color: #dc3545;
             color: white;
+            position: relative;
             z-index: 999;
-            box-shadow: 0 4px 0 #a71d2a;
-            /* Startuje relatywnie, żeby być obok Tak */
-            position: relative; 
         }
 
         #success-ui { display: none; }
         img { width: 100%; border-radius: 15px; margin-top: 20px; }
         
         #youtube-player { position: absolute; top: -1000px; }
+
+        /* Styl konfetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f2d74e;
+            position: absolute;
+            top: -10px;
+            z-index: 1;
+            border-radius: 50%;
+            animation: fall 3s linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
@@ -104,63 +118,46 @@
         const yesBtn = document.getElementById('yesBtn');
 
         function moveButton() {
-            // Przełącz na fixed przy pierwszej próbie interakcji
             noBtn.style.position = 'fixed';
-            
             const padding = 60;
             const maxX = window.innerWidth - noBtn.offsetWidth - padding;
             const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-
             const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
             const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
-
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
         }
 
         noBtn.addEventListener('mouseover', moveButton);
-        noBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            moveButton();
-        });
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveButton(); });
+
+        // Funkcja tworząca konfetti
+        function createConfetti() {
+            const colors = ['#ff4d6d', '#ff85a1', '#ffb3d1', '#ff0000', '#ffffff'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confetti.style.opacity = Math.random();
+                // Dodajemy losowy kształt (kółko lub kwadrat)
+                if (Math.random() > 0.5) confetti.style.borderRadius = '0';
+                
+                document.body.appendChild(confetti);
+                
+                // Usuń po animacji
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
 
         yesBtn.addEventListener('click', () => {
             document.getElementById('question-ui').style.display = 'none';
             document.getElementById('success-ui').style.display = 'block';
             noBtn.style.display = 'none';
-
-            // Muzyka
-            if(player) player.playVideo();
-
-            // KONFETTI - efekt wystrzału
-            var duration = 5 * 1000;
-            var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-            function randomInRange(min, max) {
-              return Math.random() * (max - min) + min;
-            }
-
-            var interval = setInterval(function() {
-              var timeLeft = animationEnd - Date.now();
-
-              if (timeLeft <= 0) {
-                return clearInterval(interval);
-              }
-
-              var particleCount = 50 * (timeLeft / duration);
-              // Wystrzały z dwóch stron ekranu
-              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-            }, 250);
             
-            // Pojedynczy wielki wystrzał serduszek (jeśli biblioteka wspiera)
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#ff0000', '#ff69b4', '#ffb3d1']
-            });
+            if(player) player.playVideo();
+            createConfetti(); // Wywołanie konfetti
         });
     </script>
 </body>

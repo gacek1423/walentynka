@@ -5,92 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Czy zostaniesz moją Walentynką? ❤️</title>
     <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #ffe6f2;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
-            touch-action: manipulation;
-        }
-
-        #container {
-            background: white;
-            padding: 40px;
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 300px;
-            z-index: 10;
-            border: 2px solid #ffb3d1;
-        }
-
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #ffe6f2; font-family: Arial, sans-serif; overflow: hidden; touch-action: manipulation; }
+        #container { background: white; padding: 40px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 280px; z-index: 10; border: 2px solid #ffb3d1; }
         h1 { color: #d63384; font-size: 22px; margin-bottom: 25px; }
-
-        .btn-group {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            height: 50px;
-        }
-
-        button {
-            padding: 12px 25px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-
+        .btn-group { display: flex; justify-content: center; align-items: center; gap: 20px; height: 50px; }
+        button { padding: 12px 25px; font-size: 18px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; }
         #yesBtn { background-color: #28a745; color: white; }
-        #noBtn {
-            background-color: #dc3545;
-            color: white;
-            position: relative;
-            z-index: 999;
-        }
-
+        #noBtn { background-color: #dc3545; color: white; position: relative; transition: all 0.1s ease; }
         #success-ui { display: none; }
         img { width: 100%; border-radius: 15px; margin-top: 20px; }
-
-        /* Styl konfetti */
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            top: -10px;
-            z-index: 1;
-            animation: fall 3s linear forwards;
-        }
-
-        @keyframes fall {
-            to { transform: translateY(100vh) rotate(360deg); }
-        }
-
-        #youtube-player { position: absolute; top: -1000px; left: -1000px; visibility: hidden; }
-
-        #warning-toast {
-            position: fixed;
-            top: 15%;
-            background: #ff4d6d;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            display: none;
-            z-index: 2000;
-            font-weight: bold;
-        }
+        #warning-toast { position: fixed; top: 15%; background: #ff4d6d; color: white; padding: 10px 20px; border-radius: 20px; display: none; z-index: 2000; font-weight: bold; }
+        .confetti { position: absolute; width: 8px; height: 8px; top: -10px; animation: fall 3s linear forwards; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="youtube-player"></div>
+    <audio id="loveSong">
+        <source src="muzyka.mp3" type="audio/mpeg">
+    </audio>
+
     <div id="warning-toast">No nie wygłupiaj się! 😂</div>
 
     <div id="container">
@@ -101,91 +35,53 @@
                 <button id="noBtn">Nie</button>
             </div>
         </div>
-
         <div id="success-ui">
             <h1>Wiedziałem!❤️</h1>
-            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpwaGZicWdtYnZ4Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5JmNoY2s9MSZwdD0x/K1tgb1IUeBOgw/giphy.gif" alt="Happy Cat">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpwaGZicWdtYnZ4Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5Z3R5JmNoY2s9MSZwdD0x/K1tgb1IUeBOgw/giphy.gif">
         </div>
     </div>
 
     <script>
-        // YouTube API
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        var player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-player', {
-                height: '0', width: '0',
-                videoId: 'BNL6ImhgCnk', // ID EKIPA - O JAK MIŁO
-                playerVars: { 
-                    'autoplay': 1, 
-                    'controls': 0, 
-                    'mute': 1, // Startujemy wyciszeni, żeby telefon pozwolił na start
-                    'playsinline': 1 
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            event.target.playVideo();
-        }
-
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
-        const toast = document.getElementById('warning-toast');
+        const song = document.getElementById('loveSong');
         let moveCount = 0;
 
-        function moveButton() {
+        function move() {
             moveCount++;
             if (moveCount === 5) {
-                toast.style.display = 'block';
-                setTimeout(() => toast.style.display = 'none', 2000);
+                document.getElementById('warning-toast').style.display = 'block';
+                setTimeout(() => document.getElementById('warning-toast').style.display = 'none', 2000);
             }
-
             noBtn.style.position = 'fixed';
-            const padding = 60;
-            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-            noBtn.style.left = Math.max(padding, Math.random() * maxX) + 'px';
-            noBtn.style.top = Math.max(padding, Math.random() * maxY) + 'px';
+            const x = Math.max(20, Math.random() * (window.innerWidth - noBtn.offsetWidth - 20));
+            const y = Math.max(20, Math.random() * (window.innerHeight - noBtn.offsetHeight - 20));
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
         }
 
-        noBtn.addEventListener('mouseover', moveButton);
-        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveButton(); });
+        noBtn.addEventListener('mouseover', move);
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); move(); });
+
+        yesBtn.addEventListener('click', () => {
+            document.getElementById('question-ui').style.display = 'none';
+            document.getElementById('success-ui').style.display = 'block';
+            noBtn.style.display = 'none';
+            song.play().catch(err => console.log("Cisza na pokładzie: ", err));
+            createConfetti();
+        });
 
         function createConfetti() {
-            const colors = ['#ff4d6d', '#ff85a1', '#ffb3d1', '#ffffff'];
-            for (let i = 0; i < 70; i++) {
+            const colors = ['#ff4d6d', '#ff85a1', '#ffffff'];
+            for (let i = 0; i < 60; i++) {
                 const c = document.createElement('div');
                 c.classList.add('confetti');
                 c.style.left = Math.random() * 100 + 'vw';
                 c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 c.style.animationDuration = (Math.random() * 2 + 1) + 's';
                 document.body.appendChild(c);
-                setTimeout(() => c.remove(), 3000);
             }
         }
-
-        yesBtn.addEventListener('click', () => {
-            document.getElementById('question-ui').style.display = 'none';
-            document.getElementById('success-ui').style.display = 'block';
-            noBtn.style.display = 'none';
-
-            // ODBLOKOWANIE DŹWIĘKU NA TELEFONIE
-            if (player) {
-                player.unMute();
-                player.setVolume(100);
-                player.playVideo();
-            }
-
-            createConfetti();
-        });
     </script>
 </body>
 </html>
